@@ -55,6 +55,12 @@ details.row > summary:hover .name { color: var(--link); }
 .when { font: 400 0.84rem/1.5 var(--sans); color: var(--muted); display: grid; gap: 2px; min-width: 0; font-variant-numeric: tabular-nums; }
 .when b { font-weight: 600; color: var(--fg); }
 .when .due { color: var(--red); font-weight: 600; }
+.todo-box { display: grid; gap: 8px; }
+.todo-box h2 { font: 700 1.35rem/1.2 var(--serif); margin: 0; }
+.todo-box ol { margin: 0; padding-left: 1.4rem; display: grid; gap: 6px; font: 1rem/1.45 var(--serif); max-width: 80ch; }
+.todo-box li b { font-family: var(--sans); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--red); margin-right: 6px; }
+.todo-box .none { color: var(--muted); }
+.when .td { color: var(--red); font-weight: 600; }
 .det { padding: 0 0 16px calc(1.6rem + 18px); }
 .det ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 4px; color: #333; max-width: 75ch; font: 0.95rem/1.45 var(--sans); }
 .det .ref { font: 600 0.78rem var(--sans); letter-spacing: 0.03em; color: var(--muted); margin-bottom: 8px; overflow-wrap: anywhere; }
@@ -78,8 +84,10 @@ footer { font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--lin
     <div class="kicker">XL Eagle · Ongoing contracts</div>
     <h1>XL Eagle Projects Board</h1>
     <p class="dek">Every active contract on one page: what needs action, who we are waiting on, and when money lands.</p>
-    <div class="asof">Status as of <span id="asof"></span>, 4 PM CT · source: <a href="https://docs.google.com/document/d/1L_Z8jvpveRdtCfJ4ulZuUrDW5FbedH8VCuLBbw8E0Yc/edit" target="_blank" rel="noopener">Ongoing Projects - Avinash</a></div>
+    <div class="asof">Status as of <span id="asof"></span>, 5 PM CT · source: <a href="https://docs.google.com/document/d/1L_Z8jvpveRdtCfJ4ulZuUrDW5FbedH8VCuLBbw8E0Yc/edit" target="_blank" rel="noopener">Ongoing Projects - Avinash</a></div>
   </header>
+
+  <section class="todo-box"><h2>Your to-do</h2><ol id="todos"></ol></section>
 
   <div class="tiles" id="tiles"></div>
 
@@ -106,124 +114,144 @@ const GROUPS = {
 };
 // next = the next dated thing to watch (ISO date or null); end = when it ends / money lands
 const P = [
-  { g:"risk", name:"Geothermal Repair (Detroit Lakes)", state:"At risk, behind schedule",
-    one:"CO wants consideration for any extension; EarthAire still unsigned; backups being lined up.",
-    next:"2026-11-25", nextTxt:"Contract due Nov 25", end:"Equipment Dec 14, install January (late)",
+  { g:"risk", name:"Geothermal Repair (Detroit Lakes)", state:"At risk, CO asking what we offer for a late finish",
+    one:"CO Elvia OK'd the diagnostic if it adds no cost and asked what consideration we offer for a finish about 2 months late. We have not answered her. EarthAire quote still unsigned in email.",
+    next:"2026-11-25", nextTxt:"Contract due Nov 25", todo:"Reply to Elvia's Oct 22 1:00 PM email: say what consideration XL Eagle offers for a finish past Nov 25 and give a diagnostic date booked with Laurel Kullerud. Sign and return EarthAire's quote as you told Luke you would.", end:"Equipment Dec 14, install January (late)",
     ref:"DOI Detroit Lakes 140FC226P0065 · $57,252",
-    d:["NTP issued Oct 20; CO (Elvia) wants consideration for any extension","EarthAire quote still unsigned (Oct 22 we told Luke we'd sign it today; no signed copy in email), equipment Dec 14, install January","Backup Geothermal Concept quoted $74,277.80","RFQ sent to Massmann; Oct 22 RFQ also sent to a second backup (callgiza) after a call, no replies yet","Diagnostic visit to schedule with Laurel Kullerud, 218-849-3105"] },
-  { g:"wait", name:"Mast Lighting Assembly (Center Hill)", state:"Kickoff tomorrow, Clayton joining",
-    one:"Clayton (Tri-State) replied 3:47 PM he will be on the kickoff call; checking if Aaron (C2 Safety) can join.",
-    next:"2026-10-23", nextTxt:"Kickoff Oct 23, 11:00 CT (Google Meet)", end:"Crane lift spring 2027",
+    d:["Oct 20: NTP issued; refuge worried about the late start","Oct 22, 1:00 PM: Elvia OK'd an on-site diagnostic at no added cost, asked what consideration XL Eagle offers for an extension, and said parts could have been ordered a month ago. Our 1:01 PM email crossed hers; no reply to her since","Diagnostic visit: book with Laurel Kullerud, laurel_kullerud@fws.gov, 218-849-3105","EarthAire (Luke): delivery Dec 14, install 2nd week of January. Oct 22 we told Luke we would sign his quote today; no signed copy in email","Backup: Geothermal Concept (Adam) quoted $74,277.80 on Oct 21","MN Geothermal declined Oct 21. Oct 22: RFQs to Massmann (Kristina) and callgiza, no replies yet"
+] },
+  { g:"risk", name:"Mast Lighting Assembly (Center Hill)", state:"Kickoff tomorrow, Clayton joining",
+    one:"Clayton (Tri-State) replied 3:47 PM he will be on the kickoff call; checking if Aaron (C2 Safety) can join. Coy asked for Teams; the link we sent is Google Meet.",
+    next:"2026-10-23", nextTxt:"Kickoff Oct 23, 11:00 CT", todo:"Before 11:00 CT Oct 23, send Coy and Ron a Teams link or confirm Google Meet works for them, then run the kickoff.", end:"Crane lift spring 2027",
     ref:"USACE Center Hill W912P526PA055 · $18,735.49 · sub Tri-State Rigging (Clayton)",
-    d:["Oct 22 AM: Clayton said Tri-State would step away over crew OSHA certifications","Oct 22: we called and emailed: certs not due until about 60 days before mobilization, only 2-3 crew need them, XL Eagle helps pay for training, OK with REV.1 price","Oct 22: Coy Bryant (USACE) confirmed a general crane inspection is enough, no third-party inspection","Oct 22: kickoff deck sent to Clayton and Aaron; asked Aaron for SSHO rate and credentials","Oct 22, 3:47 PM: Clayton: \"I will be in the meeting to assist\"; following up with Aaron","Still owed by Clayton: signed REV.1 estimate and which crew need which certs","Coy asked for Microsoft Teams; our invite is Google Meet","Backup crane RFQs to Maxim, Clark, Hampton, PTL; PTL replied"] },
-  { g:"risk", name:"Loading Dock (USDA Wyndmoor)", state:"Waiting on sub, start slipping",
-    one:"Submittals due to USDA Oct 23; Rick (Odd One) has not sent product data or COI.",
-    next:"2026-10-23", nextTxt:"Submittals due Oct 23", end:"PO ends Jan 8, 2027",
+    d:["Oct 22 AM: Clayton said Tri-State would step away over crew OSHA certifications","Oct 22: we called and emailed: certs not due until about 60 days before mobilization, XL Eagle helps pay for OSHA training, C2 Safety as SSHO, OK to sign REV.1","Oct 22: Coy Bryant (USACE) confirmed a general crane inspection is enough, no third-party inspection","Oct 22: Coy and Ron set 11:00 CT Oct 23 and said Microsoft Teams works best. We confirmed and sent a calendar invite; our email to Clayton and Aaron gives a Google Meet link","Oct 22, 3:47 PM: Clayton: \"I will be in the meeting to assist\"; following up with Aaron. 4:19 PM: revised kickoff deck v2 sent to Clayton","Still owed by Clayton: signed REV.1 estimate and which crew need which certs","Aaron (C2 Safety) has not answered the Oct 21 SSHO records request or the Oct 22 rate ask","Backup crane RFQs Oct 22 to Maxim, Clark, Hampton, PTL. PTL asked for drawings; scope, drawings and wage determination sent Oct 22, quote pending"
+] },
+  { g:"risk", name:"Loading Dock (USDA Wyndmoor)", state:"Submittals due tomorrow, sub silent",
+    one:"Package promised to USDA Oct 23. Rick has sent nothing since Oct 21 and missed our Oct 22 deadline for product data, delivery date, corrected COI and $55k confirmation.",
+    next:"2026-10-23", nextTxt:"Submittals due Oct 23", todo:"Call Rick (215-648-1989) tonight or first thing Oct 23 for the product data, delivery date, corrected COI and written $55k so the package reaches USDA Oct 23. Call Bryan Robinson (610-716-5430) to set the electrician walk, as you told Tim at 4:19 PM.", end:"PO ends Jan 8, 2027",
     ref:"USDA ARS Wyndmoor PO 1232SA26P0821 · sub Odd One (Rick) $55,000",
-    d:["Materials need 3 weeks, Oct 28 start will move, PO ends Jan 8, 2027","Submittal package promised to USDA Oct 23","Rick owes product data, delivery date, corrected COI, written $55k confirmation; nothing from him since Oct 21","Electrician: Bryan Robinson 610-716-5430; Brad Shoyer is USDA POC while Tim travels","Subcontract not yet sent to Rick"] },
+    d:["Oct 21: Rick said materials ship about 3 weeks after order. We told USDA the Oct 28 start will move, completion stays inside the PO (ends Jan 8, 2027), and the full submittal package comes Oct 23","Oct 21: Rick sent a GL COI and takeoff rev 2. 5:32 PM we asked him by end of day Oct 22 for product data on all TBD items, a delivery date, a corrected COI (add WC, XLEAGLE as additional insured, fix holder address, GL renewal before Nov 17) and written $55k fixed with Davis-Bacon. Nothing from him on Oct 22","Oct 22: Tim Toal said call electrician manager Bryan Robinson (610-716-5430, M-F 7:30 to 3:00) to set the utility pull-back meeting. 4:19 PM we told Tim we will call Bryan and confirm the time","Tim travels 2 weeks starting next week; Brad Shoyer is Rick's contact then","Angela Wingert (Contract Specialist) must be copied on all USDA mail","Subcontract not yet sent to Rick (we told him not to order or start until it is)"
+] },
   { g:"wait", name:"Water/Waste Samples (St. Cloud VA)", state:"Quarterly accepted, monthly still late",
-    one:"VA accepted the October quarterly Oct 22; waiting on Jeff (MVTL) for the October monthly, VA told early next week.",
-    next:"2026-10-23", nextTxt:"MVTL monthly report Oct 23", end:"Option Year 1: Nov 1, 2026 to Oct 31, 2027",
+    one:"VA accepted the October quarterly Oct 22, so it can be invoiced. The October monthly is late; VA was told early next week, and MVTL has not replied by email.",
+    next:"2026-10-27", nextTxt:"October monthly to VA early next week", todo:"Invoice the accepted October quarterly (WO 138938) in Tungsten.", end:"Option Year 1: Nov 1, 2026 to Oct 31, 2027",
     ref:"VA NCO 23 · 36C26326P0074 · sub MVTL",
-    d:["Sub MVTL (Jeff Hoffman); OY1 quote JLH00127 accepted Oct 14","Aug + Sep monthly accepted by Jerimy Kuhns (COR) Sep 17","Oct 22: October quarterly (WO 138938) sent to Jerimy; he replied it is acceptable, so it can be invoiced","October monthly (Manhole #37, Oct 5-6) missed the Oct 21 deadline; Jeff will send it Oct 23; VA told early next week","Monthly results due to VA before the 21st of each month","Invoice 1011 $9,322.92 paid 8/11; Aug+Sep $3,588.66 in Tungsten Sep 16; MVTL invoice 1380969 $1,788 due Oct 29","VA contacts: Jerimy Kuhns (COR) 320-252-1670 x6511; Patricia Bienusa (invoices); John Milroy (CS) 605-336-3230 x7719"] },
-  { g:"risk", name:"Bus Servicing (UTSA)", state:"Finding a new repair partner",
-    one:"Billy Bob's sent a rate sheet and offers bus towing; review against UTSA pricing. AFS sent COI only.",
-    next:"2026-10-24", nextTxt:"Review Billy Bob's rates; VA calls Oct 24", end:"Not set",
-    ref:"UTSA shuttle bus repair",
-    d:["RFQ sent to 12 San Antonio shops, ACM Body & Frame added Oct 22","Oct 22: Billy Bob's Repair & Tire (Eva Edler, 210-621-2126) sent Oct 2026 rate sheet, also offers bus towing","AFS Truck & Auto sent insurance certificate, no rates yet","Superior Fleet email bounced, call 830-387-4311","VA follows up by phone if no replies by Oct 24"] },
-  { g:"risk", name:"Transformer (Kentucky Lock)", state:"Waiting on USACE insurance review",
-    one:"WC and Smart Electric COIs sent Oct 22; XL Eagle auto coverage owed by Oct 26; kickoff Mon Oct 26 10 AM proposed to Kevin.",
-    next:"2026-10-26", nextTxt:"XL Eagle auto COI due Oct 26", end:"Starts after Notice to Proceed",
+    d:["Sub MVTL (Jeff Hoffman); OY1 quote JLH00127 accepted Oct 14","Aug and Sep monthly accepted by Jerimy Kuhns (COR) Sep 17","Oct 22, 3:24 PM: October quarterly (WO 138938, collected Oct 2) sent to Jerimy; 3:35 PM he replied \"It is acceptable\"","October monthly (Manhole #37, Oct 5-6) missed the Oct 21 deadline. Oct 21 we asked Jeff for the report or a resample; no written reply. VA told early next week","Monthly results due to VA before the 21st of each month; November results due before Nov 21","Invoice 1011 $9,322.92 paid 8/11; Aug+Sep $3,588.66 in Tungsten Sep 16; MVTL invoice 1380969 $1,788 due Oct 29","VA contacts: Jerimy Kuhns (COR) 320-252-1670 x6511; Patricia Bienusa (invoices); John Milroy (CS) 605-336-3230 x7719"
+] },
+  { g:"risk", name:"Bus Servicing (UTSA)", state:"No repair partner; Lone Star withdrew",
+    one:"Lone Star withdrew Oct 20. Billy Bob's sent a rate sheet and offers bus towing; AFS sent a COI only. UTSA has not requested any work.",
+    next:"2026-10-24", nextTxt:"Review Billy Bob's rates; phone follow-ups Oct 24", todo:"Review Billy Bob's Oct 2026 rate sheet against UTSA pricing and decide whether to take them on as the new repair partner.", end:"Not set",
+    ref:"UTSA shuttle bus repair · $20,000 Year 1 PO",
+    d:["Oct 20: Lone Star Diesel (Benjamin Boyd) formally withdrew as sub. No PO work ever released","Oct 22: RFQ sent to 11 San Antonio shops, plus ACM Body & Frame (Terry) after a call","Oct 22: Billy Bob's Repair & Tire (Eva Edler, 210-621-2126, Elmendorf) sent its Oct 2026 rate sheet and offers bus towing","Oct 22: AFS Truck & Auto (Bianca Martinez) sent a COI only, no rates","Superior Fleet email bounced; call 830-387-4311","No other replies yet. Phone follow-ups Oct 24 if needed"
+] },
+  { g:"risk", name:"Transformer (Kentucky Lock)", state:"Waiting on USACE insurance review; our auto coverage not bound",
+    one:"WC/EL and Smart Electric COIs went to USACE Oct 22. XL Eagle hired and non-owned auto is promised by Oct 26, but biBERK says a licensed agent must bind it first. Kevin has not answered the Oct 26 kickoff proposal.",
+    next:"2026-10-26", nextTxt:"XL Eagle auto COI due Oct 26", todo:"Call biBERK at 844-472-0967, ask for a licensed agent and bind hired and non-owned auto, so the XL Eagle auto COI reaches USACE by Oct 26.", end:"Starts after Notice to Proceed",
     ref:"USACE Nashville PO W912P526PA063 · sub Smart Electric $34,280",
-    d:["Sub Smart Electric (Kevin McCune, 270-534-5527), Estimate 1105 $34,280, Net 30","Oct 22: sent Brent Hester the WC/EL COI, a reissued copy naming USACE Nashville, and Smart Electric's COI ($1M auto)","XL Eagle auto (hired and non-owned) promised by Mon Oct 26; biBERK wants a call with a licensed agent, 844-472-0967","Kevin getting Houchens to fix cancellation wording on his COI; asked again Oct 22","Oct 22: Kevin's phones failed; emailed him proposing kickoff Mon Oct 26 10 AM CT, no reply yet","Notice to Proceed not issued; USACE reviewing insurance first"] },
+    d:["Sub Smart Electric (Kevin McCune, 270-534-5527), Estimate 1105 $34,280, Net 30; Oct 20 Kevin confirmed the price holds until NTP","Oct 22: Brent Hester asked again for WC/EL and auto. We sent the WC/EL COI (biBERK N8WC930619), a copy naming USACE Nashville, and Smart Electric's COI ($1M auto)","XL Eagle hired and non-owned auto promised to USACE by Mon Oct 26. biBERK Oct 22 reminder: call a licensed agent at 844-472-0967. Oct 22 COI request also sent to Next Insurance; no answer yet","Kevin getting Houchens to reissue his COI; asked again Oct 22, no reply","Oct 22: Kevin's phones failed; emailed him proposing kickoff Mon Oct 26 10 AM CT; no reply yet","Notice to Proceed not issued; USACE needs the insurance first. COR is now Joseph Parks"
+] },
   { g:"wait", name:"Scoping (NOAA Sterling)", state:"Waiting on Pioneer pricing and NOAA invoice steps",
     one:"Work accepted Oct 21. Two separate open items: Pioneer's Options B/C/D pricing (for NOAA's market research quote), and NOAA's reply on how to invoice.",
-    next:null, nextTxt:"Pioneer sends B/C/D pricing, then quote to Jennifer", end:"Invoice $22,495.20 once NOAA says how; Pioneer balance $8,652 open",
+    next:null, nextTxt:"Pioneer sends B/C/D pricing, then quote to Jennifer", todo:"", end:"Invoice $22,495.20 once NOAA says how; Pioneer balance $8,652 open",
     ref:"NOAA NWS Sterling FSC PO 1305M226P0323 · $22,495.20 · sub Pioneer Plumbers",
-    d:["Scoping and hydro-jetting done Oct 13 to 15; final report sent Oct 16, corrected Oct 19","Oct 21: Jennifer Dover (COR) confirmed the work meets the SOW","Oct 21: we asked Jennifer the next steps to invoice; no answer yet. CO Nikki Smith in training through Oct 23","Oct 21: Jennifer asked for a quote on Options B, C, D, separately priced, market research only (no contract promised)","Options B/C/D: asked Pioneer Oct 21, followed up Oct 22, and Avinash asked them to email the pricing to him directly; no reply yet","The invoice does not depend on the options quote","Pioneer: $8,652 deposit paid Oct 1; remaining $8,652 invoiced Oct 19, not paid","CO: Nikki Smith nikki.smith@noaa.gov; Jennifer Dover jennifer.dover@noaa.gov; Pioneer: Benjamin Park 703-508-3088"] },
-  { g:"wait", name:"Pest Control (San Dimas)", state:"Active, weekly service",
-    one:"4 visits done; all 4 reports sent to COR Oct 22; waiting on USFS to say how to invoice.",
-    next:"2026-10-28", nextTxt:"Next visit Wed Oct 28", end:"Runs to Sep 7, 2031",
+    d:["Scoping and hydro-jetting done Oct 13 to 15; final report sent Oct 16, corrected Oct 19","Oct 21: Jennifer Dover (COR) confirmed the work meets the SOW","Oct 21: we asked Jennifer the next steps to invoice; no answer yet. CO Nikki Smith in training through Oct 23","Oct 21: Jennifer asked for a quote on Options B, C, D, separately priced, market research only (no contract promised)","Options B/C/D: asked Pioneer Oct 21, followed up Oct 22, and Avinash asked them to email the pricing to him directly; no reply yet","The invoice does not depend on the options quote","Pioneer: $8,652 deposit paid Oct 1; remaining $8,652 invoiced Oct 19 (INV-001777), not paid","CO: Nikki Smith nikki.smith@noaa.gov; Jennifer Dover jennifer.dover@noaa.gov; Pioneer: Benjamin Park 703-508-3088"
+] },
+  { g:"risk", name:"Pest Control (San Dimas)", state:"Active, weekly service; CO paperwork overdue",
+    one:"4 visits done and all 4 reports sent Oct 22. Grace Walton's Sep 25 request to fill blocks 30a-30c on the signed award is still unanswered. Waiting on USFS to say how often to invoice.",
+    next:"2026-10-28", nextTxt:"Next visit Wed Oct 28", todo:"Send Grace Walton (cc Darlene Chase) the award with blocks 30a, 30b and 30c filled in (signer name, title, date). She asked Sep 25.", end:"Runs to Sep 7, 2031",
     ref:"USFS San Dimas 1282A726C0023 · $41,153.88 / 5 yrs · sub PestMaster",
-    d:["Weekly Wednesday service: Sep 30, Oct 7, Oct 14, Oct 21 completed","Oct 22: sent Greg Williford and Grace Walton one PDF with all 4 service reports; reports to go within 1 business day of each visit from now on","Oct 22: asked USFS how and when to invoice (IPP monthly in arrears?); no reply yet","Grace Walton asked Sep 26 for blocks 30a-30c filled on the signed award; still not answered","PestMaster has XL Eagle billing info (Oct 7) but no invoice received yet","No invoice submitted to USFS yet"] },
-
+    d:["Weekly Wednesday service: Sep 30, Oct 7, Oct 14, Oct 21 done (PestMaster tech Giesi Carlos)","Oct 22: sent Greg Williford and Grace Walton one PDF with all 4 service reports; future reports within 1 business day of each visit","Oct 22: asked USFS how often to invoice; no reply yet. The Sep 8 award says invoice in IPP and copy the COR and Darlene Chase","Sep 25: Grace Walton asked for blocks 30a-30c filled on the countersigned award; no reply from us found","PestMaster service emails show a $124.99 balance on account 37625; no separate invoice email","No invoice submitted to USFS yet","Contacts: Greg Williford (COR) 909-929-7101; Grace Walton (CO while Darlene Chase out) 530-215-0323"
+] },
   { g:"wait", name:"Transport Services (PA SWIF)", state:"Waiting on sub's price sheet",
-    one:"Contract signed Oct 8, no work guaranteed; editable Attachment B sent to John Oct 22, waiting for it back.",
-    next:null, nextTxt:"John returns Attachment B", end:"No work until PA issues an assignment",
+    one:"Contract signed Oct 8, no work guaranteed. Editable Attachment B sent to John Oct 22; waiting for it back.",
+    next:null, nextTxt:"John returns Attachment B", todo:"", end:"No work until SWIF issues a Notice to Proceed",
     ref:"PA Dept of Labor and Industry · IFB 6100065668 · Contract 4400034957",
-    d:["Contract does not guarantee work; no services until a work assignment is issued","Sub Mobility Patient Transport (John Book, john@mobilitypatienttransport.com)","Oct 14: John confirmed ready and April rates still hold; asked for a workable Price B sheet","Oct 19: John followed up","Oct 22: XL Eagle sent the editable Excel Attachment B; waiting for John to fill it and return it","PA contact: Christine Newton chrnewton@pa.gov"] },
-  { g:"wait", name:"Elevator (USCG Detroit)", state:"Board quote accepted",
-    one:"Kara accepted the itemized $7,911.47 board quote Oct 22; USCG ordering it as a separate request.",
-    next:null, nextTxt:"USCG issues the separate repair order", end:"Full-load test after board repair",
-    ref:"USCG Sector Detroit PO 70Z03026PCLEV0054 · CO Kara A. Davis",
-    d:["Oct 22: Kara said the repair will be a separate request approved outside the maintenance contract","Oct 22: quote sent, then itemized quote with labor split out (for Service Contract Act check)","Oct 22, 2:22 PM: Kara replied \"Yes, this will work\"","MEI troubleshooting $3,220 signed Oct 21, owed to MEI, do not bill USCG","Maintenance paid to MEI $2,128; no maintenance invoiced to USCG yet","Full-load test waits on the board repair"] },
-  { g:"risk", name:"Powerex Air (VA San Diego)", state:"Q1 PM partly done, report in hand",
-    one:"Signed Oct 19 report received; Haringa missed parts and wants a return visit next week; forward report to VA.",
-    next:null, nextTxt:"Forward report to VA; Haringa follow-on quote", end:"Runs to Sep 30, 2027",
+    d:["Contract does not guarantee work; no services until SWIF issues a Notice to Proceed; no purchase orders will be issued","Sub Mobility Patient Transport (John Book, john@mobilitypatienttransport.com)","Oct 14: John confirmed ready and April rates still hold; asked for a workable Price B sheet","Oct 19: John followed up","Oct 22: XL Eagle sent the editable Excel Attachment B; waiting for John to fill it in and return it","No Notice to Proceed from SWIF yet","PA contact: Christine Newton chrnewton@pa.gov 717-346-7667"
+] },
+  { g:"risk", name:"Elevator (USCG Detroit)", state:"Board repair going to USCG for approval; MEI disputes $3,220",
+    one:"Kara OK'd the format of the itemized $7,911.47 board quote and will send it up for approval as a separate request (not approved yet). MEI's Dave Lopez says the $3,220 troubleshooting quote we signed is payable and wants an answer.",
+    next:null, nextTxt:"Answer MEI on $3,220; USCG approves separate repair order", todo:"Reply to Dave Lopez (MEI) on the same thread with your decision on troubleshooting quote 34823 ($3,220): pay it, or hold the dispute in writing.", end:"Full-load test after board repair",
+    ref:"USCG Sector Detroit PO 70Z03026PCLEV0054 · CO Kara A. Davis · sub MEI",
+    d:["Oct 22: MEI (Tom Flaherty) found the failed CLC main controller board, obsolete; MEI quote 44400 Rev 1 $6,592.89; our price to USCG $7,911.47","Oct 22: Kara said the repair will be a separate request approved outside the maintenance contract","Oct 22, 2:09 PM: itemized quote with labor split out sent; 2:22 PM Kara: \"Yes, this will work\" (format OK, approval still pending)","MEI will not order the board until we approve in writing; Dave Lopez refused a labor/material breakout","$3,220 troubleshooting (quote 34823, we signed Oct 21): Oct 22 we told MEI it is not payable; Dave Lopez 1:27 PM says it is a signed fixed-price quote, invoice coming next week, and wants an answer","Maintenance: $2,128 ACH paid Oct 19 for MEI invoice 1212464A, MEI confirmed; no maintenance invoiced to USCG yet","Still owed by MEI: October PM ticket and Oct 22 troubleshooting ticket"
+] },
+  { g:"wait", name:"Powerex Air (VA San Diego)", state:"Q1 PM partly done, return visit being set",
+    one:"Signed Oct 19 report in hand. Haringa says a few parts were left off the truck and needs one short return visit; Oct 22 4:20 PM we asked VA (David Diwag) for a day Oct 26-30.",
+    next:null, nextTxt:"VA picks return-visit day (Oct 26-30); Haringa valve quote", todo:"Send David Diwag (cc Michael Lam) the signed Oct 19 service report; it was not attached to the Oct 22 4:20 PM email.", end:"Runs to Sep 30, 2027",
     ref:"VA 36C26227P0016 · PO 664C70475 · sub Haringa Compressor",
-    d:["First PM Mon Oct 19, 6th Floor Penthouse; site contact Manny Albano 858-336-5564","Oct 22: Ashley confirmed service done Oct 19 (techs Mikey Altamirano, Gypsy Cruz), Manny signed off; signed report received","Oct 22: Haringa missed a few parts and wants to return next week to finish the compressor unit","Report flags torn diaphragms on 3 exhaust valves and 4 pre-filters due in November","Oct 22: asked Haringa for priced options, pre-filter part numbers and their invoice","Report not yet forwarded to David Diwag (VA); no invoice to VA yet","Still owed by Haringa: firm reissued proposal to XL Eagle, COI, asbestos/fit-test certs (section 8.5)"] },
+    d:["First PM Mon Oct 19, 6th Floor Penthouse; site contact Manny Albano 858-336-5564; VA scheduling POC David Diwag, contract POC Michael Lam","Oct 22: Ashley confirmed service done Oct 19 (techs Mikey Altamirano, Gypsy Cruz), Manny signed off; signed report received","Oct 22: Ashley said some parts were not given to the tech by mistake and Haringa wants to install them so the system is fully serviced","Oct 22, 4:20 PM: we asked David Diwag (cc Lam, Haringa) for a day Oct 26-30 for the follow-up visit; no reply yet","Report flags torn diaphragms on 3 exhaust valves and 4 pre-filters due in November","Oct 22: Mike Altamirano: no rebuild kits, he will quote complete new valves; pre-filters go in the yearly price, in stock in San Diego","No invoice to VA yet; Haringa invoice requested Oct 22, not received","Still owed by Haringa: firm reissued proposal to XL Eagle, COI"
+] },
   { g:"wait", name:"Shaw Box (TDA Hoists)", state:"Waiting on revised price, signed sub",
-    one:"Kickoff done Oct 20; Oct 22 chased Ross (AOCrane) for revised total, collector scope and countersigned sub.",
-    next:null, nextTxt:"AOCrane revised total + signed subcontract", end:"Install March 2027 (120-day lead)",
+    one:"Kickoff done Oct 20. Oct 22 we chased Ross (AOCrane) for the revised total, collector scope and countersigned sub; no reply yet.",
+    next:null, nextTxt:"AOCrane revised total + signed subcontract", todo:"", end:"Install March 2027 (120-day lead)",
     ref:"TX Dept of Agriculture 5510001145 · PO 27-00209 · sub AOCrane $73,000 NTE",
-    d:["Sub AOCrane (Ross Bingaman, cell 979-450-4278); bond via Merchants/Foundation Surety","Oct 20 alignment call: 2 hoist and trolley units, 120-day lead, install under one week in March, 1-year warranty","Subcontract sent Oct 13, not yet countersigned","Collector question open: call recap says shoes only, Ross's Oct 20 note says 18 tandem collectors","Oct 22: asked Ross for revised total within $73,000 NTE, collector scope, countersigned sub and hoist order date; no reply yet"] },
+    d:["Sub AOCrane (Ross Bingaman, cell 979-450-4278; owner Barry Carroll)","Oct 20 alignment call: 2 hoist and trolley units, 120-day lead, install under one week in March, 1-year warranty; recap sent","Subcontract sent Oct 13, not yet countersigned","Collector question open: call recap says replace shoes only and fix one angled arm; Ross's Oct 20 note says 18 tandem collectors plus 2-speed bridge controls, pending Columbus McKinnon and Conductix pricing","Oct 22: asked Ross for revised total within $73,000 NTE, collector scope, countersigned sub and hoist order date; no reply yet","Invoices to invoices@texasagriculture.gov"
+] },
   { g:"wait", name:"Lighting (JBSA BPA)", state:"Waiting on Air Force",
-    one:"Price list returned Oct 19; no orders placed yet.",
-    next:"2026-10-29", nextTxt:"Nudge Brent Oct 29", end:"BPA, orders as issued",
+    one:"Filled price list sent Oct 19 and Brent confirmed receipt; no orders yet.",
+    next:"2026-10-29", nextTxt:"Nudge Brent Oct 29", todo:"", end:"BPA, orders as issued",
     ref:"BPA FA301626A0033 · B-52 airfield lighting, JBSA",
-    d:["Updated price list sent Oct 19, received by Brent Paul","No orders placed yet","Nudge Brent around Oct 29 if no update"] },
+    d:["Sep 25: CO Kristy Solis said CLINs 0003-0005 are priced for the current price list period only (Jun 17, 2026 to Jun 16, 2027)","Oct 7: Brent sent the updated price list","Oct 19: filled price list sent; Brent replied \"Received, thank you!\"","No orders and no Air Force email since Oct 19","Nudge Brent around Oct 29 if no update"
+] },
   { g:"wait", name:"Flow Meter (Letterkenny)", state:"Invoiced, waiting on Army",
-    one:"$1,300 invoice in WAWF for Polk to accept; LRM paid after Army pays.",
-    next:null, nextTxt:"Polk accepts in WAWF", end:"Next quarterly visit January",
+    one:"$1,300 invoice XLEPA041001 submitted in WAWF Oct 22; waiting on Polk to accept. Asked LRM for its invoice and ACH, no reply yet.",
+    next:null, nextTxt:"Polk accepts in WAWF", todo:"", end:"Next quarterly visit January",
     ref:"Letterkenny W911N226PA041 · $5,200 base year · sub LRM",
-    d:["Invoice XLEPA041001 ($1,300) submitted in WAWF Oct 22","Polk (COR) emailed to accept","LRM (Mack) asked for invoice and ACH, paid after Army pays","Next quarterly visit in January"] },
-  { g:"risk", name:"Nitrogen (Pearl Harbor)", state:"XL Eagle to re-invoice",
-    one:"Kahai replied Oct 22: re-invoice only for bottles recertified, at the contract price.",
-    next:"2026-10-23", nextTxt:"Resubmit corrected WAWF invoice", end:"Base year ended Sep 28; no options",
+    d:["Oct 6 PM visit done; calibration reports dated Oct 7, sent Oct 8","Oct 19: Polk (COR) replied \"Proceed\" to invoicing","Oct 22: invoice XLEPA041001 ($1,300) submitted in WAWF; WAWF notice says the Inspect By field differs from the contract","Oct 22: emailed Polk to accept it in WAWF; no reply yet","Oct 22: asked Mack (LRM) for LRM's invoice and ACH; LRM paid within 5 business days after Army pays; no reply yet","LRM will schedule the next quarterly visit in January"
+] },
+  { g:"risk", name:"Nitrogen (Pearl Harbor)", state:"Invoice rejected; refile at recertified count",
+    one:"Kahai (COR) said Oct 22 to bill only recertified bottles at the contract price. We told HDA we will file 287 recertified at $126,280 plus a separate CO claim for 133 painted-only. Caleb asked to confirm 287 vs 288.",
+    next:"2026-10-23", nextTxt:"Resubmit corrected WAWF invoice", todo:"Resubmit the WAWF invoice for the 287 recertified bottles at the contract price ($126,280), the count HDA gave Oct 5 and we gave the Navy Oct 19. Send the 133 painted-only claim ($40,107.37) to the CO separately. Adjust only if Caleb says 288.", end:"Base year ended Sep 28; no options",
     ref:"N3225325P1036 · sub Hawaiian Diving",
-    d:["WAWF invoice XLEAGLE103602 rejected Oct 8; Navy wants price based on services rendered","Records sent: 287 bottles hydro-tested, dried, painted, stamped; 133 painted only","Oct 22: Kahai said bill services rendered (recertified bottles) at the contract value","Next: correct and resubmit the WAWF invoice for the 287 recertified bottles","Hawaiian Diving paid $21,433 on Oct 19","Navy not exercising option years"] },
-  { g:"wait", name:"Moving (PSNS Shipyard)", state:"Paused, next move Nov 2-3",
-    one:"132 pallets moved Oct 20-22; Navy paused so Shop 51 can ready more; Rick proposed Nov 2-3.",
-    next:"2026-11-02", nextTxt:"Eco confirms Nov 2-3 move", end:"Move 2 proposal with Navy",
+    d:["WAWF invoice XLEAGLE103602 rejected Oct 8 and again Oct 15","Oct 19: told Kahai 287 bottles hydro-tested, vacuum dried, painted and stamped CERTIFIED 5 YEARS; 133 painted only","Oct 22: Kahai said base the next invoice on services rendered (recertified bottles) at the contract value","Oct 22 plan sent to HDA: 287 recertified at $126,280 in WAWF; 133 painted-only ($40,107.37) as a separate claim to the CO. The Navy has not agreed to pay the painted-only part","Oct 22, 4:03 PM: asked Caleb (HDA) to confirm the count; HDA invoices 2892/2893 say 288/131, his Oct 5 note says 287/133; no reply yet","Payment to HDA follows what the Navy actually pays"
+] },
+  { g:"wait", name:"Moving (PSNS Shipyard)", state:"Paused, Navy proposed Nov 2-3",
+    one:"132 pallets moved Oct 20-22; Navy paused so Shop 51 can ready more; Rick proposed Mon-Tue Nov 2-3, Eco has not confirmed.",
+    next:"2026-11-02", nextTxt:"Eco confirms Nov 2-3 move", todo:"", end:"Move 2 proposal with Navy",
     ref:"PSNS N4523A26P1308 · sub Eco Commercial",
-    d:["132 pallets moved Oct 20 to 22","Oct 22: Rick (COR) paused; about 13 pallets in Bldg 368 need repalletizing or sign-off, only 7 items in Bldg 147 cleared","Rick pushing Shop 51 to ready 50-60 more pallets, proposed Mon-Tue Nov 2-3; Eco not confirmed yet","Nothing needed from XL Eagle; Eco and COR coordinating directly","Move 2 proposal (N4523A26Q1333) received by Navy Oct 16"] },
+    d:["Pallets moved: 47 Oct 20, 63 Oct 21, 22 Oct 22 (132 total)","Oct 22: Eco crew on hold until items are approved and tagged; Eco took Fri Oct 23 off the schedule","Oct 22: Rick (COR) said about 13 pallets in Bldg 368 need repalletizing or signed authorization, only 7 items in Bldg 147 were ready; pause while Shop 51 readies 50-60 more","Rick asked Eco for Mon-Tue Nov 2-3; no Eco reply yet","Nothing needed from XL Eagle; Eco and COR coordinating directly","Move 2 proposal (N4523A26Q1333) received by Navy Oct 16"
+] },
   { g:"wait", name:"Project Griffin (Army)", state:"Waiting on Army decision",
-    one:"Phase 2 pitch done Oct 7; Army still evaluating (Oct 20).",
-    next:null, nextTxt:"Army decision", end:"Phase 2 pitch, not an award",
+    one:"Phase 2 pitch done; Army said Oct 20 evaluation still ongoing, no decisions yet.",
+    next:null, nextTxt:"Army decision", todo:"", end:"Phase 2 pitch, not an award",
     ref:"Army ACC-APG · CPE ISW-CFS-26-001 · partner Swimlane",
-    d:["Phase 2 package submitted Oct 2; pitch and demo held Oct 7","Decision expected around Oct 16; followed up Oct 17 and Oct 19","Oct 20: MAJ Bryan Harrison said evaluation is still ongoing; acknowledged Oct 21","Swimlane preparing a Tradewinds application and video"] },
-  { g:"wait", name:"Room Reservation (Texas A&M)", state:"Ready for go-live",
-    one:"YAROOMS setup complete Oct 19; asked Texas A&M Oct 22 for remaining steps and go-live date.",
-    next:"2027-02-05", nextTxt:"TAMU go-live date; renewal Feb 5, 2027", end:"Paid in full",
+    d:["Phase 2 package submitted Oct 2 via DoD SAFE; pitch and demo held Oct 7","Decision was expected around Oct 16; we followed up Oct 17 and Oct 19","Oct 20: MAJ Bryan Harrison said evaluation is ongoing and all offerors will be notified; we acknowledged Oct 21","Contract specialist Egypt Bell-Brathwaite in training, back Oct 23","Oct 20: Swimlane (Jim Pickering) asked for status; told them we will share as soon as we hear"
+] },
+  { g:"wait", name:"Room Reservation (Texas A&M)", state:"Ready for go-live, waiting on Texas A&M",
+    one:"YAROOMS setup complete Oct 19; asked Texas A&M Oct 22 for remaining steps and go-live date; no reply yet.",
+    next:"2027-02-05", nextTxt:"TAMU go-live date; renewal Feb 5, 2027", todo:"", end:"Paid in full",
     ref:"TAMU Mays order C26-02-22648 · YAROOMS",
-    d:["Texas A&M paid XL Eagle $10,867.50 on Apr 22; YAROOMS invoice paid in May","Oct 19: YAROOMS confirmed account, floors, spaces and Outlook integration done","Oct 22: emailed Brian, Greg and Michah for what remains on the TAMU side and the go-live date; no reply yet","Contacts: Brian Wiederwohl, Greg Spiller, Michah McFeron, Chris Notzon (mays.tamu.edu / tamu.edu)"] },
-
+    d:["Texas A&M paid XL Eagle $10,867.50 by ACH Apr 22; YAROOMS invoice $6,904 paid Apr 28 (term Feb 5, 2026 to Feb 5, 2027)","Oct 7: Michah asked if the only step left is adding rooms","Oct 19: YAROOMS (Raluca) confirmed account, floors, spaces and Outlook integration done; ready for go-live","Oct 22: emailed Brian, Greg and Michah for what remains on the TAMU side and the go-live date; no reply yet","Contacts: Brian Wiederwohl, Greg Spiller, Michah McFeron, Chris Notzon (mays.tamu.edu / tamu.edu)"
+] },
   { g:"done", name:"Fume Hood (USDA FPL)", state:"Done, payment scheduled",
-    one:"USDA $8,216 scheduled to pay (about Nov 6, estimate); LabMetrics $4,110 after.",
-    next:"2026-11-06", nextTxt:"USDA pays ~Nov 6 (estimate)", end:"Then pay LabMetrics $4,110",
+    one:"IPP shows USDA $8,216 approved and scheduled to pay, with no pay date listed. We pay LabMetrics $4,110 after it arrives.",
+    next:"2026-11-06", nextTxt:"USDA pays ~Nov 6 (estimate)", todo:"", end:"Then pay LabMetrics $4,110",
     ref:"USDA Forest Products Lab 12444526P0079 · $8,216",
-    d:["Oct 16: Jackson said approved Oct 8, payment usually about 30 days","Oct 22: IPP says scheduled to pay, no pay date listed yet","Oct 22: invoice copy sent to Jackson (cc LabMetrics); he acknowledged","LabMetrics owed $4,110 after USDA pays"] },
+    d:["Oct 16: Jackson said the invoice was approved Oct 8 and payment usually takes about 30 days","Oct 22: IPP says scheduled to pay, no pay date listed","Oct 22: invoice copy sent to Jackson (cc LabMetrics); he replied \"Thank you\" with no date","LabMetrics invoice #23627, $4,110, is paid after USDA pays"
+] },
   { g:"done", name:"Depoe Bay Welding (USCG)", state:"Done, waiting on payment",
-    one:"Work done, welder paid; USCG $5,096 approved, payment expected around Nov 12.",
-    next:"2026-11-12", nextTxt:"USCG pays ~Nov 12", end:"Closeout after payment",
+    one:"Work done, welder paid. USCG approved the $5,096 invoice in IPP Oct 13; Finance Center gives no date. IPP sent an unnamed payment notice Oct 15. Payment status asked Oct 22, no reply yet.",
+    next:"2026-10-27", nextTxt:"Follow up with USCG if not paid by ~Oct 27 (7 to 10 business days)", todo:"Log into IPP > Payments and check whether the Oct 15 settlement is this $5,096.", end:"Closeout after payment",
     ref:"USCG PO 70Z04026PSBPL0084 · $5,096",
-    d:["Welder (Neal's Mobile Welding) paid $2,920 on Sep 3","Invoice approved in IPP Oct 13, expected around Nov 12","Follow-up sent to SK1 Richardson Oct 22"] },
-
+    d:["Welder (Neal's Mobile Welding) invoice #000674, $2,920, paid Sep 8","Oct 13: SK1 Richardson approved the invoice in IPP; Finance Center gives no ETA, follow up after 7 to 10 business days","Oct 15: IPP \"Settlement Notification Only\" received; it names no PO or amount","Oct 22: asked SK1 Richardson for payment status or a Finance Center contact; no reply yet"
+] },
   { g:"wait", name:"BPA Leak", state:"Waiting on next Guard call",
-    one:"Hawaii ANG hazardous waste BPA, sub CCC on board; no call yet, next call date unknown.",
-    next:null, nextTxt:"Wait for next BPA call", end:"Ordering period to Aug 12, 2031",
-    ref:"HIANG BPA W50SLF26AA007 · sub Hawaii CCC (Blair)",
-    d:["Aug 13: BPA ordering period Aug 13, 2026 to Aug 12, 2031; signed acceptance returned Aug 19","Sep 29: not selected for the September call","Oct 14: final subcontract sent to CCC","Oct 22: Paraiso says more calls will come, no date; DBIDS badges wait until a call is issued","Oct 22: Blair told no pickups for the month-end oil shipment"] },
-  { g:"wait", name:"Calibration", state:"At lab, 19 of 30 units in",
-    one:"Navy Sasebo calibration; 5 cartons (19 units) reached Custom Cal Oct 22; bench starts week of Oct 26.",
-    next:"2026-10-26", nextTxt:"Lab starts week of Oct 26", end:"PoP through Jan 31, 2027",
+    one:"Hawaii ANG hazardous waste BPA, sub CCC signed. Guard says more calls will come but gave no date; DBIDS badges wait until a call is issued.",
+    next:null, nextTxt:"Wait for next BPA call", todo:"", end:"Ordering period to Aug 12, 2031",
+    ref:"HIANG BPA W50SLF26AA007 · sub Hawaii CCC (Blair Suzuki)",
+    d:["Aug 13: BPA ordering period Aug 13, 2026 to Aug 12, 2031; signed acceptance returned Aug 19","Sep 29: not selected for the September call","Oct 14: Blair (CCC) signed and returned the final subcontract","Oct 22: SSgt Paraiso says more calls will come, no date; DBIDS badges wait until a call is issued","Oct 22: told Blair there are no pickups for the month-end oil shipment and that DBIDS waits for a call"
+] },
+  { g:"risk", name:"Calibration", state:"At lab, 19 units in, batch plan unclear",
+    one:"All 5 cartons (19 units) at Custom Cal Oct 22, bench starts next week. Chris quotes 10 to 15 business days after all 30 units arrive, but the other 11 ship only after these 19 return.",
+    next:"2026-10-26", nextTxt:"Lab starts week of Oct 26; settle batch plan before then", todo:"Send Chris one short email (not a status check) before Oct 26: ask the lab to calibrate and return the 19 units now without waiting for the other 11, which ship only after these come back.", end:"PoP through Jan 31, 2027",
     ref:"NAVSUP FLC Puget Sound N0040626P0211 (Mod P00001) · $47,500 · sub Custom Calibration Solutions $14,265",
-    d:["Sep 29: Mod P00001 raised CLIN 0001 to $47,500, PoP to Jan 31, 2027","Oct 14: DHL picked up 5 cartons from BCO Sasebo","Oct 21: PO sent to Custom Cal, $14,265, 30 units","Oct 22: all 5 cartons received (one box damaged outside); Navy updated","Lab finishes 10 to 15 business days after all 30 units arrive; only 19 shipped, no email yet on the other 11","Chris Naranjo asked us to stop status chasers"] },
+    d:["Sep 29: Mod P00001 raised CLIN 0001 to $47,500, PoP to Jan 31, 2027; plan is two batches in order (19 units, then 11)","Oct 14: DHL picked up 5 cartons from BCO Sasebo; 3 arrived Oct 20, last 2 Oct 22 (one outer box damaged)","Oct 21: PO XLE-26P0211-CC-01 ($14,265, 30 units) sent to Custom Cal","Oct 22: Navy (Fumika, Jenny Boyle) updated","Oct 22: Chris says boxes inventoried by end of day, he will flag only discrepancies, bench next week, and asked us to stop status emails and calls","Conflict: Chris's 10 to 15 business days counts from receipt of all 30 units, but batch 2 (11 units) leaves Sasebo only after batch 1 returns"
+] },
   { g:"wait", name:"GSA", state:"Waiting on GSA review",
-    one:"MAS offer 3087553 filed by GSA Focus; waiting for a GSA Contract Specialist to be assigned.",
-    next:"2026-10-23", nextTxt:"GSA Focus status due Oct 23", end:"No award yet",
-    ref:"GSA MAS 47QSMD20R0001 offer 3087553 · consultant GSA Focus",
-    d:["Aug 28: GSA confirmed offer 3087553 received","Sep 18: GSA said the offer is in the queue","Oct 20: GSA Focus asked GSA whether review has started; no reply","Oct 22: asked GSA Focus (Andrea) for status by end of day Oct 23"] },
+    one:"MAS offer 3087553 is in GSA's queue with no Contract Specialist assigned yet. GSA Focus was asked for status by end of day Oct 23.",
+    next:"2026-10-23", nextTxt:"GSA Focus status due Oct 23", todo:"", end:"No award yet",
+    ref:"GSA MAS 47QSMD20R0001 offer 3087553 (eOffer N1NAMXGY) · consultant GSA Focus",
+    d:["Aug 28: GSA welcome letter confirmed offer 3087553 received","Sep 18: Tasnuva Khan (GSA) said the offer is in the queue for a Contract Specialist","Oct 9: GSA Focus says review takes 3 to 6 months, then 1 to 2 weeks to negotiate","Oct 20: Josh Ladick (GSA Focus) asked GSA whether review has started; no GSA reply","Oct 22: asked GSA Focus (Andrea Gil) for status by end of day Oct 23; no reply yet"
+] },
 ];
 
 const ORDER = ["risk","wait","done","idle"];
@@ -239,8 +267,14 @@ function tiles() {
   }).join("");
   document.querySelectorAll(".tile").forEach(b => b.onclick = () => { filter = filter === b.dataset.g ? null : b.dataset.g; render(); });
 }
+function todos() {
+  const items = P.filter(p => p.todo).sort((a,b) => (a.next||"9999").localeCompare(b.next||"9999"));
+  document.getElementById("todos").innerHTML = items.length
+    ? items.map(p => `<li><b>${esc(p.name.replace(/ \(.*\)$/, ""))}</b>${esc(p.todo)}</li>`).join("")
+    : `<li class="none">Nothing on you right now.</li>`;
+}
 function render() {
-  tiles();
+  tiles(); todos();
   const rows = P.filter(p => (!filter || p.g === filter) &&
       (!q || [p.name,p.state,p.one,p.ref,p.end,...p.d].join(" ").toLowerCase().includes(q)))
     .sort((a,b) => ORDER.indexOf(a.g) - ORDER.indexOf(b.g) || (a.next||"9999").localeCompare(b.next||"9999"));
@@ -253,7 +287,7 @@ function render() {
         <span class="ico" aria-label="${GROUPS[p.g].label}">${GROUPS[p.g].icon}</span>
         <span><span class="name">${esc(p.name)}</span><br><span class="state">${esc(p.state)}</span></span>
         <span class="one">${esc(p.one)}</span>
-        <span class="when"><span><b>Next:</b> <span class="${overdue ? "due" : ""}">${esc(p.nextTxt)}</span></span>${p.end ? `<span><b>End:</b> ${esc(p.end)}</span>` : ""}</span>
+        <span class="when">${p.todo ? `<span class="td">To do: ${esc(p.todo)}</span>` : ""}<span><b>Next:</b> <span class="${overdue ? "due" : ""}">${esc(p.nextTxt)}</span></span>${p.end ? `<span><b>End:</b> ${esc(p.end)}</span>` : ""}</span>
       </summary>
       ${p.ref || p.d.length ? `<div class="det">${p.ref ? `<div class="ref">${esc(p.ref)}</div>` : ""}<ul>${p.d.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
     </details>`;
